@@ -4,7 +4,7 @@ import winston from 'winston';
 const logger = winston.createLogger({
   level: 'info', // Log level (e.g., 'info', 'warn', 'error')
   format: winston.format.combine(
-    winston.format.timestamp(), // Add a timestamp to each log
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // Human-readable timestamp
     winston.format.json() // Log in JSON format
   ),
   transports: [

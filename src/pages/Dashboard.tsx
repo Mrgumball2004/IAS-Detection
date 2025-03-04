@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
+import image from './Pics/Sonic Evil Sonic GIF - Sonic Evil sonic Evil sonic licking lips - Descobrir e Compartilhar GIFs.gif';
 
 const Dashboard: React.FC = () => {
   // Safely retrieve user data from localStorage
@@ -27,6 +29,18 @@ const Dashboard: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+
+    <IonCard style={{ textAlign: 'center' }}>
+    <center><img alt="Silhouette of mountains" src={image} /></center>
+      <IonCardHeader>
+        <IonCardTitle>{user.email}</IonCardTitle>
+        <IonCardSubtitle>Developer of this system</IonCardSubtitle>
+      </IonCardHeader>
+      <IonCardContent>
+        "Malooy gali ang ginoo si Sir pa kaha"
+      </IonCardContent>
+    </IonCard>
+
         <h1>Welcome, {user.email}!</h1>
         <p>You are now logged in.</p>
         <p>Login time: {loginTimestamp}</p>
