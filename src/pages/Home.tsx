@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -23,8 +23,13 @@ const Home: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and sign-up
   const history = useHistory();
+  const [attempts, setAttempts] = useState<number>(0);
+  const [timer, setTimer] = useState<number>(0);
+  const [loginError, setLoginError] = useState<string>('');
 
   const handleAuth = async () => {
+    if (timer > 0) return; // Prevent login during lockout
+
     // Validate email and password
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -61,15 +66,52 @@ const Home: React.FC = () => {
       setTimeout(() => {
         history.push('/dashboard');
       }, 2000); // 2-second delay
+      setAttempts(0);
     } catch (error) {
-      console.error(`${isLogin ? 'Login' : 'Sign-up'} failed:`, error);
-      setErrorMessage(
-        isLogin
-          ? 'Invalid email or password. Please try again.'
-          : 'Sign-up failed. Please try again.'
-      );
+      // Increment failed attempts
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (isLogin && newAttempts >= 5) {
+        setTimer(15);
+        setLoginError('Login failed. Try again after');
+        notifyUser();
+      } else {
+        setLoginError(
+          isLogin
+            ? 'Invalid email or password. Please try again.'
+            : 'Sign-up failed. Please try again.'
+        );
+      }
     }
   };
+
+  const notifyUser = () => {
+    if (Notification.permission === 'granted') {
+      new Notification('Security Alert', {
+        body: 'Multiple failed login attempts detected on your account.',
+      });
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          new Notification('Security Alert', {
+            body: 'Multiple failed login attempts detected on your account.',
+          });
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+      return () => clearInterval(countdown);
+    } else if (timer === 0 && attempts >= 5) {
+      setAttempts(0);
+      setLoginError('');
+    }
+  }, [timer, attempts]);
 
   return (
     <IonPage>
@@ -113,9 +155,19 @@ const Home: React.FC = () => {
         </IonItem>
 
         {/* Login/Sign Up Button */}
-        <IonButton expand="full" onClick={handleAuth}>
-          {isLogin ? 'Login' : 'Sign Up'}
-        </IonButton>
+        <IonAlert
+          isOpen={!!loginError}
+          onDidDismiss={() => setLoginError('')}
+          header="Error"
+          message={loginError + (timer > 0 ? ` (${timer} seconds remaining)` : '')}
+          buttons={['OK']}
+        />
+
+          {(
+          <IonButton expand="full" onClick={handleAuth}>
+            {isLogin ? 'Login' : 'Sign Up'}
+          </IonButton>
+        )}
 
         {/* Error Message Alert */}
         <IonAlert

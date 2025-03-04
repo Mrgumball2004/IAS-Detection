@@ -122,7 +122,7 @@ const ChangePassword: React.FC = () => {
           onDidDismiss={() => {
             setShowAlert(false);
             if (shouldRedirect) {
-              history.push('/login');
+              history.push('/home');
             }
           }}
           header={alertHeader}

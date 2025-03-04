@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import logger from '../logger.js'; // Import the logger
 
+
 // Global rate limiter: Applies to all routes
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
