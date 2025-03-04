@@ -88,13 +88,13 @@ const Home: React.FC = () => {
   const notifyUser = () => {
     if (Notification.permission === 'granted') {
       new Notification('Security Alert', {
-        body: 'Multiple failed login attempts detected on your account.',
+        body: `Hey ${email}! Detected Multiple failed login attempts on your account.`,
       });
     } else if (Notification.permission !== 'denied') {
       Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
           new Notification('Security Alert', {
-            body: 'Multiple failed login attempts detected on your account.',
+            body: `Multiple failed login attempts detected on your account (${email}).`,
           });
         }
       });
